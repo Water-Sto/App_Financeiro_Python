@@ -16,3 +16,5 @@
 15;Transporte;38.9;Débito;Uber Sheila;05/08/2026;Nubank
 16;Mensalidades;20.0;Pix;Anuidade Caixa;07/08/2026;Nubank
 17;Mensalidades;634.8;Pix;Estácio;07/08/2026;Nubank
+18;Lanche;3.68;Débito;Alimentação;10/08/2026;Nubank
+19;Uber;11.4;Débito;Transporte;11/08/2026;Nubank

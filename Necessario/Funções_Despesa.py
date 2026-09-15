@@ -6,6 +6,20 @@ from time import sleep
 from datetime import date
 import os
 
+
+class Gasto:
+    def __init__(self, nome, valor, forma_pagamento, categoria, data, banco):
+        self.nome = nome
+        self.valor = valor
+        self.forma_pagamento = forma_pagamento
+        self.categoria = categoria
+        self.data = data
+        self.banco = banco
+
+    def descrever(self):
+        print(f'{self.nome} | {self.valor} | {self.forma_pagamento} | {self.categoria} | {self.data} | {self.banco}')
+        return self.nome, self.valor, self.forma_pagamento, self.categoria, self.data, self.banco
+
 lista_textos = ['Índice', 'Item', 'Valor', 'Tipo de pagamento', 'Categoria', 'Data', 'Banco']
 
 def inserir_gasto(planilha: pd.DataFrame, banco_padrao='None'):
@@ -15,32 +29,32 @@ def inserir_gasto(planilha: pd.DataFrame, banco_padrao='None'):
 
     possibilidades_pagamento = ['Débito', 'Crédito', 'Pix', 'Saldo']
 
-    objeto = input('Digite o nome do produto/serviço: ').title()
-    valor_objeto = validar_valor('Digite um valor para o pagamento: ')
-    forma_pagamento = input('Digite o tipo do pagamento: ').title()
-    categoria_objeto = input('Digite a categoria do item: ').title()
-    data = validar_data('Digite a data do pagamento (XX/XX/XXXX): ')
-    if forma_pagamento not in possibilidades_pagamento:
-        banco = 'None'
+    novo_gasto = Gasto(input('Digite o nome do produto/serviço: ').title(),
+                        validar_valor('Digite um valor para o pagamento: '),
+                        input('Digite o tipo do pagamento: ').title(),
+                        input('Digite a categoria do item: ').title(),
+                        validar_data('Digite a data do pagamento (XX/XX/XXXX): '),
+                        input('Digite o banco responsável pela transação: ').title())
 
-    else:
-        banco = input('Digite o banco responsável pela transação: ').title()
+    if novo_gasto.banco == '' and banco_padrao == 'None' or novo_gasto.forma_pagamento not in possibilidades_pagamento:
+        novo_gasto.banco = 'None'
 
-    if banco_padrao != 'None' and banco == '':
-        banco = banco_padrao
+    if novo_gasto.banco == '' and banco_padrao != 'None':
+        novo_gasto.banco = banco_padrao
 
-    if data == '':
-        data = date.today().strftime('%d/%m/%Y')
+    if novo_gasto.data == '':
+        novo_gasto.data = date.today().strftime('%d/%m/%Y')
 
     adicionado = pd.DataFrame(
-        [{'Item': objeto, 'Valor': valor_objeto, 'Tipo_de_pagamento': forma_pagamento,
-            'Categoria': categoria_objeto, 'Data': data, 'Banco': banco}])
+        [{'Item': novo_gasto.nome, 'Valor': novo_gasto.valor, 'Tipo_de_pagamento': novo_gasto.forma_pagamento,
+            'Categoria': novo_gasto.categoria, 'Data': novo_gasto.data, 'Banco': novo_gasto.banco}])
 
     planilha = pd.concat([planilha, adicionado], ignore_index=True)
     arquivo_temp = 'Financeiro_novo_temporário.xlsx'
     planilha.to_excel(arquivo_temp, index=False)
     os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
-    gerenciamento_txt(categoria_objeto, valor_objeto, forma_pagamento, objeto, data, banco)
+    novo_gasto.descrever()
+    gerenciamento_txt(novo_gasto.nome, novo_gasto.valor, novo_gasto.forma_pagamento, novo_gasto.categoria, novo_gasto.data, novo_gasto.banco)
     return
 
 def acessar_planilha(planilha: pd.DataFrame, apagar = False, item = 'None'):
