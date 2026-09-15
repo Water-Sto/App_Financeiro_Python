@@ -1,0 +1,18 @@
+0;Mãe;50.0;Pix;Empréstimo;14/06/2026;Nubank
+1;Alimentação;6.42;Pix;Pão De Queijo;16/06/2026;Nubank
+2;Alimentação;12.9;Débito;Salgado;29/06/2026;Nubank
+3;Mensalidades;423.22;Pix;Faculdade;30/06/2026;Nubank
+4;Mãe;30.0;Pix;Empréstimo;11/07/2026;Nubank
+5;Mensalidades;62.89;Pix;Fatura Do Cartão;15/07/2026;Nubank
+6;Mensalidades;20.0;Pix;Anuidade Caixa;15/07/2026;Nubank
+7;Mãe;70.0;Pix;Empréstimo;15/07/2026;Nubank
+8;Mãe;15.0;Pix;Empréstimo;17/07/2026;Nubank
+9;Aparencia;36.0;Pix;Corte De Cabelo;30/07/2026;Nubank
+10;Mãe;50.0;Pix;Empréstimo;24/06/2026;Nubank
+11;Mensalidades;500.0;Pix;Aluguel;22/06/2026;Nubank
+12;Transporte;50.0;Pix;Cartão De Passagem;04/08/2026;Nubank
+13;Alimentação;3.36;Débito;Pão De Queijo;05/08/2026;Nubank
+14;Mensalidades;64.39;Débito;Fatura Do Cartão;07/08/2026;Nubank
+15;Transporte;38.9;Débito;Uber Sheila;05/08/2026;Nubank
+16;Mensalidades;20.0;Pix;Anuidade Caixa;07/08/2026;Nubank
+17;Mensalidades;634.8;Pix;Estácio;07/08/2026;Nubank
