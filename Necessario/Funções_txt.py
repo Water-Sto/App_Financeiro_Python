@@ -59,7 +59,7 @@ def gerenciamento_backups_txt(tipo_planilha, categoria, valor, tipo, data, banco
         registro = f'{categoria};{valor};{tipo};{item};{data};{banco}\n'
 
         try:
-            indice = quantidade_linhas_txt('Backup_gastos.txt')
+            indice = quantidade_linhas_txt('../txt/Backup_gastos.txt')
             with open("../txt/Backup_gastos.txt", "a", encoding="utf-8") as arquivo:
                 arquivo.write(f'{indice};{registro}')
                 return
@@ -73,7 +73,7 @@ def gerenciamento_backups_txt(tipo_planilha, categoria, valor, tipo, data, banco
         registro = f'{categoria};{valor};{tipo};{data};{banco}\n'
 
         try:
-            indice = quantidade_linhas_txt('Backup_ganhos.txt')
+            indice = quantidade_linhas_txt('../txt/Backup_ganhos.txt')
             with open("../txt/Backup_ganhos.txt", "a", encoding="utf-8") as arquivo:
                 arquivo.write(f'{indice};{registro}')
                 return
