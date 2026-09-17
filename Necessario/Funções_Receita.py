@@ -8,20 +8,28 @@ from Funções_txt import *
 lista_textos = ['Índice', 'Categoria', 'Valor', 'Tipo de transferência', 'Data', 'Banco']
 
 def inserir_ganho(planilha: pd.DataFrame, categoria, valor, tipo, data, banco = 'None', banco_padrao = 'None'):
-    if banco_padrao != 'None' and banco == 'None':
+    if banco == 'None' or banco == '':
         banco = banco_padrao
 
     if data == '':
         data = date.today().strftime('%d/%m/%Y')
 
-    adicionado = pd.DataFrame([{'Categoria': categoria, 'Valor': valor, 'Tipo': tipo, 'Data': data, 'Banco': banco}])
+
+    adicionado = pd.DataFrame([{'Categoria': categoria, 'Valor': valor, 'Tipo_de_transferência': tipo, 'Data': data, 'Banco': banco}])
     planilha = pd.concat([planilha, adicionado])
     excel_temp = 'Receita_temp.xlsx'
     planilha.to_excel(excel_temp, index=False)
-    os.replace(excel_temp, 'Receita.xlsx')
+    try:
+        os.replace(excel_temp, 'Receita.xlsx')
+
+    except PermissionError:
+        print(f'{cor_texto("vermelho")}Tentativa de transferência de dados do backup para a planilha principal falhou, feche o programa e tente novamente.{cor_texto("stop")}')
+        return
+
+    gerenciamento_backups_txt('Receita', categoria, valor, tipo, data, banco)
     return
 
-def acessar_planilha(planilha: pd.DataFrame, apagar = False, item = 'None'):
+def acessar_planilha_receita(planilha: pd.DataFrame, apagar = False, item ='None'):
 
     """Função visando filtrar o acesso à planilha com base em informações como o tipo do item ou a categoria
     do mesmo. Também é a função utilizada para apagar itens do Excel com base no índice das suas posições"""
@@ -81,11 +89,10 @@ def acessar_planilha(planilha: pd.DataFrame, apagar = False, item = 'None'):
                 print(f'{cor_texto("vermelho")}Linha não encontrada, tente novamente.{cor_texto("stop")}')
                 break
 
-            apagar_linha_txt(linha_apagada)
-            backup_receita_txt(planilha['Categoria'][linha_apagada], planilha['Valor'][linha_apagada], planilha['Tipo'][linha_apagada], planilha['Data'][linha_apagada], planilha['Banco'][linha_apagada], apagar = True)
-            print(f'{cor_texto("verde")}Item "{planilha["Item"][linha_apagada]}", correspondente ao valor R${planilha["Valor"][linha_apagada]} no dia {planilha["Data"][linha_apagada]} deletado com sucesso!{cor_texto("stop")}')
+            apagar_linha_txt('Receita', linha_apagada)
+            print(f'{cor_texto("verde")}Transferência do tipo "{planilha["Categoria"][linha_apagada]}", correspondente ao valor R${planilha["Valor"][linha_apagada]} no dia {planilha["Data"][linha_apagada]} deletado com sucesso!{cor_texto("stop")}')
             planilha = planilha.drop(index = linha_apagada)
-            arquivo_temp = 'Financeiro_novo_temp.xlsx'
+            arquivo_temp = 'Receita_temp.xlsx'
             planilha.to_excel(arquivo_temp, index=False)
-            os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+            os.replace(arquivo_temp, 'Receita.xlsx')
             break

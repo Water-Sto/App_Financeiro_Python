@@ -1,0 +1,5 @@
+0;Pxg;4500.0;Pix;17/09/2026;Nubank
+1;Salário;1530.63;Pix;17/09/2026;Nubank
+2;Freelancer;100.0;Dinheiro F;17/09/2026;Nubank
+3;Freelancer;150.0;Pix;17/09/2026;Nubank
+4;Salário;1830.62;Pix;17/09/2026;Nubank

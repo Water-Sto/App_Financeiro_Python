@@ -33,7 +33,7 @@ def inserir_gasto(planilha: pd.DataFrame, objeto, valor_objeto, forma_pagamento,
             [{'Item': objeto, 'Valor': valor_objeto, 'Tipo_de_pagamento': forma_pagamento,
               'Categoria': categoria_objeto, 'Data': data, 'Banco': banco}])
 
-    gerenciamento_txt(categoria_objeto, valor_objeto, forma_pagamento, objeto, data, banco)
+    gerenciamento_backups_txt(categoria_objeto, valor_objeto, forma_pagamento, objeto, data, banco)
     planilha = pd.concat([planilha, adicionado], ignore_index=True)
     arquivo_temp = 'Financeiro_novo_temporário.xlsx'
     planilha.to_excel(arquivo_temp, index=False)
@@ -94,7 +94,6 @@ def apagar_linha(planilha: pd.DataFrame, variavel: int):
              #   return
 
             apagar_linha_txt(linha_apagada)
-            gerenciamento_txt(planilha['Categoria'][linha_apagada], planilha['Valor'][linha_apagada], planilha['Tipo_de_pagamento'][linha_apagada], planilha['Item'][linha_apagada], planilha['Data'][linha_apagada], planilha['Banco'][linha_apagada], apagar = True)
             frase_resposta = f'{cor_texto("verde")}Item "{planilha["Item"][linha_apagada]}", correspondente ao valor R${planilha["Valor"][linha_apagada]} no dia {planilha["Data"][linha_apagada]} deletado com sucesso!{cor_texto("stop")}'
             planilha = planilha.drop(index = linha_apagada)
             arquivo_temp = 'Financeiro_novo_temp.xlsx'

@@ -1,9 +1,12 @@
 from Funções_Despesa import *
 from Funções_de_validação import *
-from Cores import cor_texto
+from Funções_Receita import *
+
+planilha_despesa = 'Despesa.xlsx'
+planilha_receita = 'Receita.xlsx'
 
 try:
-    despesa = pd.read_excel('Financeiro_novo.xlsx')
+    despesa = pd.read_excel(planilha_despesa)
 except FileNotFoundError:
     dados = {'Categoria': [],
              'Valor': [],
@@ -12,11 +15,11 @@ except FileNotFoundError:
              'Data': []}
 
     df = pd.DataFrame(dados)
-    df.to_excel('Financeiro_novo.xlsx', index = False)
-    despesa = pd.read_excel('Financeiro_novo.xlsx')
+    df.to_excel(planilha_despesa, index = False)
+    despesa = pd.read_excel(planilha_despesa)
 
 try:
-    receita = pd.read_excel('Receita.xlsx')
+    receita = pd.read_excel(planilha_receita)
 except FileNotFoundError:
     dados = (
         {'Categoria': [],
@@ -28,8 +31,8 @@ except FileNotFoundError:
     )
 
     df = pd.DataFrame(dados)
-    df.to_excel('Receita.xlsx', index=False)
-    receita = pd.read_excel('Receita.xlsx')
+    df.to_excel(planilha_receita, index=False)
+    receita = pd.read_excel(planilha_receita)
 
 # =============================== Listas com cada tipo de dado na planilha de gastos ===================================
 
@@ -40,9 +43,16 @@ tipo_de_pagamento = despesa['Tipo_de_pagamento']
 lista_itens = despesa['Item']
 lista_data = despesa['Data']
 
+class Entrada:
+    def __init__(self, categoria, valor, tipo, data, banco):
+        self.categoria = categoria
+        self.valor = valor
+        self.tipo = tipo
+        self.data = data
+        self.banco = banco
 # ================================================ Loop Principal ======================================================
 
-lista_opcoes = ['Sair', 'Verificar gastos gerais', 'Verificar gastos em produtos específicos', 'Adicionar gasto', 'Definir Banco Padrão', 'Apagar gastos', 'Verificar gastos por data']
+lista_opcoes = ['Sair', 'Verificar gastos gerais', 'Verificar gastos em produtos específicos', 'Adicionar gasto', 'Definir Banco Padrão', 'Apagar gastos', 'Verificar gastos por data', 'Adicionar Receita']
 
 try:
     banco_padrao = ler_banco_principal()
@@ -63,18 +73,19 @@ while True:
 
             case 0:
                 print(f'{cor_texto("verde")}Obrigado por participar! Encerrando...{cor_texto("stop")}')
+
                 break
 
             case 1:
                 ver_gastos(despesa)
 
             case 2:
-                acessar_planilha(despesa)
+                acessar_planilha_despesa(despesa)
 
             case 3:
                 try:
                     inserir_gasto(despesa, banco_padrao)
-                    despesa = atualizar_planilha()
+                    despesa = atualizar_planilha(planilha_despesa)
 
                 except PermissionError:
                     print(f'{cor_texto("vermelho")}Erro, o excel/bloco de notas deve ser fechado antes de acessar!{cor_texto("stop")}')
@@ -90,8 +101,8 @@ while True:
                     sleep(1)
 
             case 5:
-                acessar_planilha(despesa, apagar = True)
-                despesa = atualizar_planilha()
+                acessar_planilha_despesa(despesa, apagar = True)
+                despesa = atualizar_planilha(planilha_despesa)
 
             case 6:
                 lista_por_data, valor_total = ordenar(despesa)
@@ -101,6 +112,26 @@ while True:
                         print(linha.rstrip())
 
                 print(f'{cor_texto("azul")}Valor total: R${valor_total:.2f}{cor_texto("stop")}')
+
+            case 7:
+                nova_entrada = Entrada(
+                        input('Digite a categoria do item: ').title(),
+                        validar_valor('Digite um valor para o pagamento: '),
+                        input('Digite o tipo do pagamento: ').title(),
+                        validar_data('Digite a data do pagamento (XX/XX/XXXX): '),
+                        input('Digite o banco responsável pela transação: ').title())
+
+                inserir_ganho(receita,
+                              nova_entrada.categoria,
+                              nova_entrada.valor,
+                              nova_entrada.tipo,
+                              nova_entrada.data,
+                              banco = nova_entrada.banco,
+                              banco_padrao = banco_padrao
+                              )
+
+                receita = atualizar_planilha(planilha_receita)
+
             case _:
                 print(f'{cor_texto("vermelho")} Erro, numero da opção inválido. {cor_texto("stop")}')
 

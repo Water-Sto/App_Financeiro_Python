@@ -5,7 +5,7 @@ from Cores import cor_texto
 from time import sleep
 from datetime import date
 import os
-
+from Backend import planilha_despesa
 
 class Gasto:
     def __init__(self, nome, valor, forma_pagamento, categoria, data, banco):
@@ -50,14 +50,14 @@ def inserir_gasto(planilha: pd.DataFrame, banco_padrao='None'):
             'Categoria': novo_gasto.categoria, 'Data': novo_gasto.data, 'Banco': novo_gasto.banco}])
 
     planilha = pd.concat([planilha, adicionado], ignore_index=True)
-    arquivo_temp = 'Financeiro_novo_temporário.xlsx'
+    arquivo_temp = 'Despesa_temp.xlsx'
     planilha.to_excel(arquivo_temp, index=False)
-    os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+    os.replace(arquivo_temp, planilha_despesa)
     novo_gasto.descrever()
-    gerenciamento_txt(novo_gasto.nome, novo_gasto.valor, novo_gasto.forma_pagamento, novo_gasto.categoria, novo_gasto.data, novo_gasto.banco)
+    gerenciamento_backups_txt('Despesa', novo_gasto.categoria, novo_gasto.valor, novo_gasto.forma_pagamento, novo_gasto.data, novo_gasto.banco, item = novo_gasto.nome)
     return
 
-def acessar_planilha(planilha: pd.DataFrame, apagar = False, item = 'None'):
+def acessar_planilha_despesa(planilha: pd.DataFrame, apagar = False, item ='None'):
 
     """Função visando filtrar o acesso à planilha com base em informações como o tipo do item ou a categoria
     do mesmo. Também é a função utilizada para apagar itens do Excel com base no índice das suas posições"""
@@ -117,13 +117,19 @@ def acessar_planilha(planilha: pd.DataFrame, apagar = False, item = 'None'):
                 print(f'{cor_texto("vermelho")}Linha não encontrada, tente novamente.{cor_texto("stop")}')
                 break
 
-            apagar_linha_txt(linha_apagada)
-            gerenciamento_txt(planilha['Categoria'][linha_apagada], planilha['Valor'][linha_apagada], planilha['Tipo_de_pagamento'][linha_apagada], planilha['Item'][linha_apagada], planilha['Data'][linha_apagada], planilha['Banco'][linha_apagada], apagar = True)
+
             print(f'{cor_texto("verde")}Item "{planilha["Item"][linha_apagada]}", correspondente ao valor R${planilha["Valor"][linha_apagada]} no dia {planilha["Data"][linha_apagada]} deletado com sucesso!{cor_texto("stop")}')
             planilha = planilha.drop(index = linha_apagada)
-            arquivo_temp = 'Financeiro_novo_temp.xlsx'
+            arquivo_temp = 'Despesa_temp.xlsx'
             planilha.to_excel(arquivo_temp, index=False)
-            os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+            try:
+                os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+
+            except PermissionError:
+                print(f'{cor_texto("vermelho")}Tentativa de transferência de dados do backup para a planilha principal falhou, feche o programa e tente novamente.{cor_texto("stop")}')
+                break
+
+            apagar_linha_txt('Despesa', linha_apagada)
             break
 
 def ver_gastos(planilha: pd.DataFrame):
@@ -171,11 +177,10 @@ def ordenar(planilha: pd.DataFrame):
     txt_final, valor_total = lista_por_dia(planilha, lista_dias)
     return txt_final, valor_total
 
-
-def atualizar_planilha():
+def atualizar_planilha(planilha_para_atualizar):
 
     try:
-        planilha = pd.read_excel('Financeiro_novo.xlsx')
+        planilha = pd.read_excel(planilha_para_atualizar)
         return planilha
 
     except FileNotFoundError:
