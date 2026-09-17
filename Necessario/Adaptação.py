@@ -40,6 +40,69 @@ def inserir_gasto_adaptado(planilha: pd.DataFrame, objeto, valor_objeto, forma_p
     os.replace(arquivo_temp, 'Despesa.xlsx')
     return
 
+def validar_data_adaptado(mensagem):
+    """Função genérica para validação de datas. Recebe como parâmetro uma mensagem de texto, utilizada para
+    informar a finalidade da data. Consegue converter o formato de ano resumido (XX/XX/XX) para (XX/XX/XXXX)."""
+
+    while True:
+        data = mensagem
+
+        if data == '':
+            return data
+
+        if data.replace('/', '').isnumeric():
+            dia = data[0] + data[1]
+            mes = data[3] + data[4]
+
+            if len(data) != 10 and len(data) != 8:
+                return f'O Formato de data foi definido de maneira incorreta, corrija e tente novamente.'
+
+            elif int(dia) > 31 or  int(dia) < 1:
+                return f'O Dia foi definido de maneira incorreta, corrija e tente novamente.'
+
+            elif int(mes) > 12 or int(mes) < 1:
+                return f'O mês foi definido de maneira incorreta, corrija e tente novamente.'
+
+            elif len(data) == 8:
+                data_final = f'{dia}/{mes}/20{data[6]}{data[7]}'
+                return data_final
+
+            elif len(data) == 10:
+                return data
+
+        else:
+            return f'Formato de data incompreensivel, tente novamente.'
+
+def validar_valor_adaptado(mensagem):
+    """ função genérica para validar um número float. Recebe uma mensagem como parâmetro, utilizada para
+    informar a finalidade do valor. Pode substituir caracteres como virgula e barra por um ponto,
+    facilitando o entendimento do sistema do que é um número float (ponto flutuante). """
+
+    while True:
+
+        valor = mensagem
+        valor = valor.replace(',', '.')
+        valor = valor.replace(' ', '.')
+        valor = valor.replace('/', '.')
+        validacao = valor
+
+        if valor.isalpha():
+            return f'Erro, o valor deve ser um numero valido.'
+
+        elif valor == '':
+            return f'Erro, você deve digitar um valor para o item.'
+
+        elif valor.isalnum():
+            try:
+                validacao = float(valor)
+                return valor
+
+            except ValueError:
+                return f'Erro, algum caractere não foi reconhecido.'
+
+        elif not valor.isalnum():
+            return valor
+
 def buscar(planilha: pd.DataFrame, item):
 
     """Função visando filtrar o acesso à planilha com base em informações como o tipo do item ou a categoria
