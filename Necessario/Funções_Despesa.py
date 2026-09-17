@@ -5,7 +5,9 @@ from Cores import cor_texto
 from time import sleep
 from datetime import date
 import os
-from Backend import planilha_despesa
+
+if '__init__' == '__main__':
+    from Backend import planilha_despesa
 
 class Gasto:
     def __init__(self, nome, valor, forma_pagamento, categoria, data, banco):

@@ -33,11 +33,11 @@ def inserir_gasto_adaptado(planilha: pd.DataFrame, objeto, valor_objeto, forma_p
             [{'Item': objeto, 'Valor': valor_objeto, 'Tipo_de_pagamento': forma_pagamento,
               'Categoria': categoria_objeto, 'Data': data, 'Banco': banco}])
 
-    gerenciamento_backups_txt(categoria_objeto, valor_objeto, forma_pagamento, objeto, data, banco)
+    gerenciamento_backups_txt('Despesa', categoria_objeto, valor_objeto, forma_pagamento, objeto, data, banco)
     planilha = pd.concat([planilha, adicionado], ignore_index=True)
-    arquivo_temp = 'Financeiro_novo_temporário.xlsx'
+    arquivo_temp = 'Despesa_temp.xlsx'
     planilha.to_excel(arquivo_temp, index=False)
-    os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+    os.replace(arquivo_temp, 'Despesa.xlsx')
     return
 
 def buscar(planilha: pd.DataFrame, item):
@@ -96,9 +96,9 @@ def apagar_linha(planilha: pd.DataFrame, variavel: int):
             apagar_linha_txt(linha_apagada)
             frase_resposta = f'{cor_texto("verde")}Item "{planilha["Item"][linha_apagada]}", correspondente ao valor R${planilha["Valor"][linha_apagada]} no dia {planilha["Data"][linha_apagada]} deletado com sucesso!{cor_texto("stop")}'
             planilha = planilha.drop(index = linha_apagada)
-            arquivo_temp = 'Financeiro_novo_temp.xlsx'
+            arquivo_temp = 'Despesa_temp.xlsx'
             planilha.to_excel(arquivo_temp, index=False)
-            os.replace(arquivo_temp, 'Financeiro_novo.xlsx')
+            os.replace(arquivo_temp, 'Despesa.xlsx')
             return frase_resposta
 
 def ver_gastos(planilha: pd.DataFrame):
