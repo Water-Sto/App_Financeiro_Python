@@ -112,32 +112,86 @@ def backup_receita_txt(categoria, valor, tipo, data, banco = 'None', apagar = Fa
                     if linha != registro:
                         arquivo.write(linha)
 
+        if apagar:
+            apagar_linha_txt('Receita', )
+
     except FileNotFoundError:
         with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
             if apagar:
                 print(f'{cor_texto("vermelho")}Erro, nenhuma informação existente para ser apagada.{cor_texto("stop")}')
                 return
 
-            arquivo.write(f'0;{categoria};{valor};{tipo_de_pagamento};{item};{data};{banco}\n')
+            arquivo.write(f'0;{categoria};{valor};{tipo};{data};{banco}\n')
 
-def apagar_linha_txt(indice_deletado):
+def apagar_linha_txt(tipo_planilha, indice_deletado):
     """Função genérica para apagar linhas de um documento txt. Recebe como parametro apenas o índice da linha
     que deve ser apagada no documento original. Reescreve todas as linhas do documento txt, renovando o índice de
     cada linha no processo. """
 
     indice = 0
 
-    try:
-        with open("Backup_gastos.txt", "r", encoding="utf-8") as arquivo:
-            linhas = arquivo.readlines()
+    if tipo_planilha == 'Despesa':
+        try:
+            with open("Backup_gastos.txt", "r", encoding="utf-8") as arquivo:
+                linhas = arquivo.readlines()
 
-        with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
-            for linha in linhas:
-                if not linha.startswith(f'{indice_deletado};'):
-                    linha = f'{indice}{linha[1:]}'
-                    arquivo.write(f'{linha}')
-                    indice += 1
+            with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
+                for linha in linhas:
+                    if not linha.startswith(f'{indice_deletado};'):
+                        linha = f'{indice}{linha[1:]}'
+                        arquivo.write(f'{linha}')
+                        indice += 1
 
-    except FileNotFoundError:
-        print(f'{cor_texto("vermelho")}Nenhuma linha existente para ser apagada.{cor_texto("stop")}')
+        except FileNotFoundError:
+            print(f'{cor_texto("vermelho")}Nenhuma linha existente para ser apagada.{cor_texto("stop")}')
 
+    if tipo_planilha == 'Receita':
+
+        try:
+            with open("Backup_ganhos.txt", "r", encoding="utf-8") as arquivo:
+                linhas = arquivo.readlines()
+
+            with open("Backup_ganhos.txt", "w", encoding="utf-8") as arquivo:
+                for linha in linhas:
+                    if not linha.startswith(f'{indice_deletado};'):
+                        linha = f'{indice}{linha[1:]}'
+                        arquivo.write(f'{linha}')
+                        indice += 1
+
+        except FileNotFoundError:
+            print(f'{cor_texto("vermelho")}Nenhuma linha existente para ser apagada.{cor_texto("stop")}')
+
+def gerenciamento_total_txt(tipo_planilha, categoria, valor, tipo, data, banco, indice: int = 0, item = 'None', apagar = False):
+    if tipo_planilha == 'Despesa':
+
+        registro = f'{categoria};{valor};{tipo};{item};{data};{banco}\n'
+
+        try:
+            if not apagar:
+                indice = ler_txt('Backup_gastos.txt')
+                with open("Backup_gastos.txt", "a", encoding="utf-8") as arquivo:
+                    arquivo.write(f'{indice};{registro}')
+                    return
+
+            if apagar:
+
+                apagar_linha_txt(tipo_planilha, indice)
+
+                with open("Backup_gastos.txt", "r", encoding="utf-8") as arquivo:
+                    linhas = arquivo.readlines()
+
+                with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
+                    for linha in linhas:
+                        if linha != registro:
+                            linha = linha.split(';', 1)
+                            arquivo.write(f'{indice};{linha[1]}')
+                        indice += 1
+
+        except FileNotFoundError:
+            with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
+                if apagar:
+                    print(
+                        f'{cor_texto("vermelho")}Erro, nenhuma informação existente para ser apagada.{cor_texto("stop")}')
+                    return
+
+                arquivo.write(f'0;{categoria};{valor};{tipo};{item};{data};{banco}\n')

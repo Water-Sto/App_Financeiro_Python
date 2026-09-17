@@ -21,8 +21,9 @@ except FileNotFoundError:
     dados = (
         {'Categoria': [],
          'Valor': [],
-         'Tipo': [],
-         'Lembrete': [],
+         'Tipo_de_transferência': [],
+         'Data': [],
+         'Banco': []
          }
     )
 
