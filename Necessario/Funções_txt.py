@@ -2,7 +2,7 @@ from Cores import cor_texto
 from datetime import datetime
 
 def definir_banco_principal(banco_principal):
-    with open("Banco_principal.txt", "w", encoding="utf-8") as arquivo:
+    with open("../txt/Banco_principal.txt", "w", encoding="utf-8") as arquivo:
         arquivo.write(banco_principal)
         print(f'Seu banco principal foi definido como: {banco_principal}')
 
@@ -41,7 +41,7 @@ def lista_por_dia(banco_de_dados, intervalo_datas):
         return nome_arquivo, valor_final
 
 def ler_banco_principal():
-    with open("Banco_principal.txt", "r", encoding="utf-8") as arquivo:
+    with open("../txt/Banco_principal.txt", "r", encoding="utf-8") as arquivo:
         for linha in arquivo:
             pass
         return linha
@@ -60,12 +60,12 @@ def gerenciamento_backups_txt(tipo_planilha, categoria, valor, tipo, data, banco
 
         try:
             indice = quantidade_linhas_txt('Backup_gastos.txt')
-            with open("Backup_gastos.txt", "a", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_gastos.txt", "a", encoding="utf-8") as arquivo:
                 arquivo.write(f'{indice};{registro}')
                 return
 
         except FileNotFoundError:
-            with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
                 arquivo.write(f'0;{registro}')
 
     if tipo_planilha == 'Receita':
@@ -74,12 +74,12 @@ def gerenciamento_backups_txt(tipo_planilha, categoria, valor, tipo, data, banco
 
         try:
             indice = quantidade_linhas_txt('Backup_ganhos.txt')
-            with open("Backup_ganhos.txt", "a", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_ganhos.txt", "a", encoding="utf-8") as arquivo:
                 arquivo.write(f'{indice};{registro}')
                 return
 
         except FileNotFoundError:
-            with open("Backup_ganhos.txt", "w", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_ganhos.txt", "w", encoding="utf-8") as arquivo:
                 arquivo.write(f'0;{registro}')
 
 def apagar_linha_txt(tipo_planilha, indice_deletado):
@@ -91,10 +91,10 @@ def apagar_linha_txt(tipo_planilha, indice_deletado):
 
     if tipo_planilha == 'Despesa':
         try:
-            with open("Backup_gastos.txt", "r", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_gastos.txt", "r", encoding="utf-8") as arquivo:
                 linhas = arquivo.readlines()
 
-            with open("Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_gastos.txt", "w", encoding="utf-8") as arquivo:
                 for linha in linhas:
                     if not linha.startswith(f'{indice_deletado};'):
                         linha = f'{indice};{linha.split(";", 1)[1]}'
@@ -107,10 +107,10 @@ def apagar_linha_txt(tipo_planilha, indice_deletado):
     if tipo_planilha == 'Receita':
 
         try:
-            with open("Backup_ganhos.txt", "r", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_ganhos.txt", "r", encoding="utf-8") as arquivo:
                 linhas = arquivo.readlines()
 
-            with open("Backup_ganhos.txt", "w", encoding="utf-8") as arquivo:
+            with open("../txt/Backup_ganhos.txt", "w", encoding="utf-8") as arquivo:
                 for linha in linhas:
                     if not linha.startswith(f'{indice_deletado};'):
                         linha = f'{indice};{linha.split(";", 1)[1]}'
