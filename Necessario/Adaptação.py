@@ -7,7 +7,7 @@ import os
 
 lista_textos = ['Índice', 'Item', 'Valor', 'Tipo de pagamento', 'Categoria', 'Data', 'Banco']
 
-def inserir_gasto(planilha: pd.DataFrame, objeto, valor_objeto, forma_pagamento, categoria_objeto, data, banco = 'None', banco_padrao='None', dinheiro_fisico = False):
+def inserir_gasto_adaptado(planilha: pd.DataFrame, objeto, valor_objeto, forma_pagamento, categoria_objeto, data, banco ='None', banco_padrao='None', dinheiro_fisico = False):
     """Função visando inserir dados linha a linha na planilha. Recebe uma planilha de Excel como parâmetro e
     uma confirmação de "banco padrão". Enquanto o mesmo for "None", o usuário terá que escrever qual banco será
     utilizado. Utiliza a biblioteca "datetime" para puxar a data atual caso o usuário não informe a data da transação."""
