@@ -60,6 +60,20 @@ def ler_quantidade_bancos():
 
     return lista_bancos
 
+def apagar_banco(banco_removido):
+    try:
+
+        with open("../txt/Quantidade_bancos.txt", "r", encoding="utf-8") as arquivo:
+            linhas = arquivo.readlines()
+
+        with open("../txt/Quantidade_Bancos.txt", "w", encoding="utf-8") as arquivo:
+            for linha in linhas:
+                if linha != f'{banco_removido};\n':
+                    arquivo.write(linha)
+
+    except FileNotFoundError:
+        pass
+
 def adicionar_banco(banco):
     try:
         with open("../txt/Quantidade_bancos.txt", "a", encoding="utf-8") as arquivo:

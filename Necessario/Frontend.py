@@ -291,6 +291,11 @@ class TelaBancos(ctk.CTkFrame):
 
         self.app = app
 
+        self.posix = 75
+        self.posiy = 50
+        self.botoes_bancos = list()
+        self.botoes_excluir = list()
+
         self.texto = ctk.CTkLabel(
             self,
             text='',
@@ -317,12 +322,6 @@ class TelaBancos(ctk.CTkFrame):
 
         self.lista_bancos = ler_quantidade_bancos()
 
-        self.posix = 75
-        self.posiy = 60
-
-        self.botoes_bancos = list()
-
-        print(self.lista_bancos)
         for banco in self.lista_bancos:
             self.botao = ctk.CTkButton(
                 self,
@@ -332,7 +331,18 @@ class TelaBancos(ctk.CTkFrame):
                 command=lambda banco=banco: self.tornar_banco_principal(banco)
             )
 
+
+
+            self.botao_excluir = ctk.CTkButton(
+                self,
+                text="X",
+                width=10,
+                height=20,
+                command=lambda banco=banco: self.remover_banco(banco)
+            )
+
             self.botao.place(x = self.posix, y = self.posiy)
+            self.botao_excluir.place(x=self.posix + 120, y=self.posiy)
 
             if self.posix <= 575:
                 self.posix += 250
@@ -341,38 +351,119 @@ class TelaBancos(ctk.CTkFrame):
                 self.posix = 75
                 self.posiy += 80
 
+            self.botoes_excluir.append(self.botao_excluir)
             self.botoes_bancos.append(self.botao)
 
         self.posix -= 250
 
+        self.atualizar_bancos()
+
+
+
         botao_retorno.place(x = posicao_botao_voltar[0], y = posicao_botao_voltar[1])
         self.novo_banco.place(x = posicao_botao_submit[0], y = 350)
         self.botao_submit.place(x = posicao_botao_submit[0], y = posicao_botao_submit[1])
+
+
+    def atualizar_bancos(self):
+
+
+        for botao in self.botoes_excluir:
+            botao.destroy()
+
+        for botao in self.botoes_bancos:
+            botao.destroy()
+
+        self.botoes_bancos.clear()
+        self.botoes_excluir.clear()
+
+        self.posix = 75
+        self.posiy = 50
+
+
+        for banco in self.lista_bancos:
+            self.botao = ctk.CTkButton(
+                self,
+                text=f'{banco}',
+                width=140,
+                anchor ='center',
+                command=lambda banco=banco: self.tornar_banco_principal(banco)
+            )
+
+
+            self.botao_excluir = ctk.CTkButton(
+                self,
+                text="X",
+                width=10,
+                height=20,
+                command=lambda banco=banco: self.remover_banco(banco)
+            )
+
+            self.botao.place(x=self.posix, y=self.posiy)
+            self.botao_excluir.place(x=self.posix + 120, y=self.posiy)
+
+            if self.posix <= 575:
+                self.posix += 250
+
+            if self.posix > 575:
+                self.posix = 75
+                self.posiy += 80
+
+            self.botoes_excluir.append(self.botao_excluir)
+            self.botoes_bancos.append(self.botao)
+
+        self.posix -= 250
 
     def tornar_banco_principal(self, banco):
 
         self.mostrar_mensagem(f'Seu banco principal foi definido como: {banco}', VERDE, 3000)
         definir_banco_principal(banco)
 
+    def remover_banco(self, banco):
+
+        banco = banco.capitalize()
+        self.mostrar_mensagem(f'O banco {banco} foi removido com sucesso!', VERDE, 3000)
+        apagar_banco(banco)
+        print(self.lista_bancos)
+        print(banco)
+        self.lista_bancos.remove(banco)
+        self.atualizar_bancos()
 
     def inserir_novo_banco(self):
-        adicionar_banco(self.novo_banco.get().capitalize())
-        self.botao = ctk.CTkButton(
-            self,
-            text=self.novo_banco.get().capitalize(),
-            )
 
-        self.lista_bancos.append(self.botao)
+        if self.novo_banco.get() != '':
+            adicionar_banco(self.novo_banco.get().capitalize())
+            self.botao = ctk.CTkButton(
+                self,
+                text=self.novo_banco.get().capitalize(),
+                command=lambda banco=self.novo_banco.get(): self.tornar_banco_principal(banco)
+                )
 
-        if self.posix <= 575:
-            self.posix += 250
+            self.botao_excluir = ctk.CTkButton(
+                self,
+                text="x",
+                width=10,
+                height=20,
+                command=lambda banco=self.novo_banco.get(): self.remover_banco(banco)
+                )
 
-        if self.posix > 575:
-            self.posix = 75
-            self.posiy += 80
+            self.botoes_excluir.append(self.botao_excluir)
+            self.botoes_bancos.append(self.botao)
 
-        self.botao.place(x = self.posix, y = self.posiy)
-        self.limpar_campos()
+            if self.posix <= 575:
+                self.posix += 250
+
+            if self.posix > 575:
+                self.posix = 75
+                self.posiy += 80
+
+            self.botao.place(x = self.posix, y = self.posiy)
+            self.botao_excluir.place(x = self.posix + 120, y = self.posiy)
+            self.lista_bancos.append(self.novo_banco.get().capitalize())
+            self.limpar_campos()
+
+        else:
+            self.mostrar_mensagem('Você precisa inserir o nome do banco adicionado', VERMELHO, 3000)
 
     def apagar_mensagem(self):
         self.texto.configure(text='')
