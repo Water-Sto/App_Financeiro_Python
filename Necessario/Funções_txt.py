@@ -46,6 +46,30 @@ def ler_banco_principal():
             pass
         return linha
 
+def ler_quantidade_bancos():
+    lista_bancos = list()
+    try:
+        with open("../txt/Quantidade_Bancos.txt", "r", encoding="utf-8") as arquivo:
+            for linha in arquivo:
+                remocao = linha.replace(';', '')
+                remocao = remocao.replace('\n', '')
+                lista_bancos.append(remocao)
+
+    except FileNotFoundError:
+        pass
+
+    return lista_bancos
+
+def adicionar_banco(banco):
+    try:
+        with open("../txt/Quantidade_bancos.txt", "a", encoding="utf-8") as arquivo:
+            arquivo.write(f'{banco};\n')
+
+    except FileNotFoundError:
+        with open("../txt/Quantidade_bancos.txt", "w", encoding="utf-8") as arquivo:
+            arquivo.write(f'{banco};\n')
+
+
 def quantidade_linhas_txt(nome_txt):
     quantidade_linhas = 0
     with open(nome_txt, "r", encoding="utf-8") as arquivo:

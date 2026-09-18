@@ -1,0 +1,9 @@
+Nubank;
+Banco do Brasil;
+Caixa;
+Newbank;
+Santander;
+Pagbank;
+C6 bank;
+Qrqsbank;
+Tfdlfne;

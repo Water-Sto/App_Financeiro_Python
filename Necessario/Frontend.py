@@ -1,8 +1,6 @@
 import customtkinter as ctk
 from Adaptação import *
 from Funções_Despesa import Gasto
-from Funções_de_validação import *
-from time import sleep
 
 # ================== Configurações de tela =================
 
@@ -13,13 +11,38 @@ modo_escuro = False
 ctk.set_appearance_mode('Dark')
 ctk.set_default_color_theme("blue")
 
+# ================== Cores de texto ========================
+
+VERMELHO = '#FF5733'
+VERDE = '#2ECC71'
+
+# ================== Posições de mensagem ==================
+
+erro_x = 150
+erro_y = 20
+posicao_botao_voltar = (75, 400)
+posicao_botao_submit = (575, 400)
+
 # ================== Configurações da janela ===============
+
+def trocar_modo():
+    global modo_escuro
+
+    if modo_escuro:
+        ctk.set_appearance_mode('Light')
+        modo_escuro = False
+        return
+
+    if not modo_escuro:
+        ctk.set_appearance_mode('Dark')
+        modo_escuro = True
+        return
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Controle de testes")
+        self.title("Finwesen")
         self.geometry("800x500")
 
         self.container = ctk.CTkFrame(self)
@@ -30,6 +53,7 @@ class App(ctk.CTk):
 
         self.tela_gastos = TelaGastos(self.container, self)
         self.tela_inicial = TelaInicial(self.container, self)
+        self.tela_bancos = TelaBancos(self.container, self)
 
         self.tela_gastos.grid(
             row=0,
@@ -42,6 +66,12 @@ class App(ctk.CTk):
             column=0,
             sticky="nsew"
             )
+
+        self.tela_bancos.grid(
+            row=0,
+            column=0,
+            sticky="nsew"
+        )
 
 
         self.mostrar_tela(self.tela_inicial)
@@ -77,6 +107,7 @@ class TelaInicial(ctk.CTkFrame):
         self.tabela_meses = ctk.CTkButton(
             self,
             text="Bancos",
+            command=lambda: self.app.mostrar_tela(self.app.tela_bancos)
         )
 
         self.graficos = ctk.CTkButton(
@@ -87,44 +118,21 @@ class TelaInicial(ctk.CTkFrame):
         self.switch = ctk.CTkSwitch(
             self,
             text='Modo Escuro',
-            command=self.trocar_modo
+            command=trocar_modo
         )
-
-        self.entrada = ctk.CTkEntry(
-            self,
-            placeholder_text='Digite o valor')
 
         self.titulo_pagina1.pack(pady=20)
         verificar_gastos.place(x=50, y=100)
         self.definir_banco.place(x=50, y=150)
         self.tabela_meses.place(x=50, y=200)
         self.graficos.place(x=50, y=250)
-        self.entrada.place(x=200, y=100)
-
-    def mostrar_gastos(self):
-        valor = self.entrada.get()
-        print(valor)
+        self.switch.place(x=50, y = 50)
 
     def informar_planilha(self):
-        valor = self.entrada.get()
-        buscar(banco_de_dados_despesa, item=valor)
+        pass
 
     def menu_lateral(self):
         pass
-
-    def trocar_modo(self):
-
-        global modo_escuro
-
-        if modo_escuro:
-            ctk.set_appearance_mode('Light')
-            modo_escuro = False
-            return
-
-        if not modo_escuro:
-            ctk.set_appearance_mode('Dark')
-            modo_escuro = True
-            return
 
 class TelaGastos(ctk.CTkFrame):
 
@@ -132,6 +140,13 @@ class TelaGastos(ctk.CTkFrame):
         super().__init__(master)
 
         self.app = app
+
+        self.texto = ctk.CTkLabel(
+                self,
+                text='',
+                text_color='#FF5733',
+                font=('Arial', 24, 'bold')
+                )
 
         titulo = ctk.CTkLabel(
             self,
@@ -188,13 +203,11 @@ class TelaGastos(ctk.CTkFrame):
         self.forma_de_pagamento.place(x=75, y=200)
         self.banco_item.place(x=325, y=200)
         self.data_compra.place(x=575, y=200)
-        self.submit.place(x=575, y=400)
+        self.submit.place(x = posicao_botao_submit[0], y = posicao_botao_submit[1])
 
-        botao_retorno.place(x=75, y=400)
+        botao_retorno.place(x = posicao_botao_voltar[0], y = posicao_botao_voltar[1])
 
     def inserir_gasto_front(self):
-
-
 
         base_valor_item = validar_valor_adaptado(self.valor_item.get())
         base_data = validar_data_adaptado(self.data_compra.get())
@@ -212,54 +225,20 @@ class TelaGastos(ctk.CTkFrame):
 
         if base_data in lista_erros_data:
 
-            texto = ctk.CTkLabel(
-                self,
-                text=base_data,
-                text_color='#FF5733',
-                font=('Arial', 24, 'bold')
-                )
-
-            texto.place(x=200, y=20)
-
-            self.after(3000, lambda: texto.configure(text=''))
+            self.mostrar_mensagem(base_data, VERMELHO, 3000)
+            self.apagar_mensagem()
 
         elif base_valor_item in lista_erros_valor:
 
-            texto = ctk.CTkLabel(
-                self,
-                text=str(base_valor_item),
-                text_color='#FF5733',
-                font=('Arial', 24, 'bold')
-            )
-
-            texto.place(x=200, y=20)
-
-            self.after(3000, lambda: texto.configure(text=''))
+            self.mostrar_mensagem(str(base_valor_item), VERMELHO, 3000)
 
         elif self.nome_item.get() == '':
 
-            texto = ctk.CTkLabel(
-                self,
-                text='Você deve definir o nome do item',
-                text_color='#FF5733',
-                font=('Arial', 24, 'bold')
-            )
-
-            texto.place(x=200, y=20)
-
-            self.after(3000, lambda: texto.configure(text=''))
+            self.mostrar_mensagem('Você deve definir o nome do item', VERMELHO, 3000)
 
         elif self.forma_de_pagamento.get() == '':
-            texto = ctk.CTkLabel(
-                self,
-                text='Você deve definir uma forma de pagamento',
-                text_color='#FF5733',
-                font=('Arial', 24, 'bold')
-            )
 
-            texto.place(x=200, y=20)
-
-            self.after(3000, lambda: texto.configure(text=''))
+            self.mostrar_mensagem('Você deve definir uma forma de pagamento', VERMELHO, 3000)
 
         else:
 
@@ -283,15 +262,7 @@ class TelaGastos(ctk.CTkFrame):
                                    novo_gasto.banco
                                    )
 
-            texto = ctk.CTkLabel(
-                self,
-                text='Informações atualizadas com sucesso!',
-                text_color='#2ECC71',
-                font=('Arial', 24, 'bold')
-            )
-
-            texto.place(x=200, y=20)
-            self.after(5000, lambda: texto.configure(text=''))
+            self.mostrar_mensagem('Informações atualizadas com sucesso!', VERDE, 5000)
 
             self.limpar_campos()
 
@@ -303,9 +274,119 @@ class TelaGastos(ctk.CTkFrame):
         self.banco_item.delete(0, 'end')
         self.data_compra.delete(0, 'end')
 
+    def apagar_mensagem(self):
+        self.texto.configure(text='')
+
+    def mostrar_mensagem(self, mensagem, cor, tempo_em_tela:int):
+
+        self.texto.configure(text=mensagem,
+                             text_color=cor)
+
+        self.texto.place(x = erro_x, y = erro_y)
+        self.after(tempo_em_tela, self.apagar_mensagem)
+
+class TelaBancos(ctk.CTkFrame):
+    def __init__(self, master, app):
+        super().__init__(master)
+
+        self.app = app
+
+        self.texto = ctk.CTkLabel(
+            self,
+            text='',
+            text_color=VERMELHO,
+            font=('Arial', 24, 'bold')
+        )
+
+        botao_retorno = ctk.CTkButton(
+            self,
+            text='Voltar',
+            command=lambda: self.app.mostrar_tela(self.app.tela_inicial)
+        )
+
+        self.novo_banco = ctk.CTkEntry(
+            self,
+            placeholder_text='Novo banco'
+        )
+
+        self.botao_submit = ctk.CTkButton(
+            self,
+            text='Submit',
+            command=self.inserir_novo_banco
+        )
+
+        self.lista_bancos = ler_quantidade_bancos()
+
+        self.posix = 75
+        self.posiy = 60
+
+        self.botoes_bancos = list()
+
+        print(self.lista_bancos)
+        for banco in self.lista_bancos:
+            self.botao = ctk.CTkButton(
+                self,
+                text=f'{banco}',
+                width=140,
+                anchor ='center',
+                command=lambda banco=banco: self.tornar_banco_principal(banco)
+            )
+
+            self.botao.place(x = self.posix, y = self.posiy)
+
+            if self.posix <= 575:
+                self.posix += 250
+
+            if self.posix > 575:
+                self.posix = 75
+                self.posiy += 80
+
+            self.botoes_bancos.append(self.botao)
+
+        self.posix -= 250
+
+        botao_retorno.place(x = posicao_botao_voltar[0], y = posicao_botao_voltar[1])
+        self.novo_banco.place(x = posicao_botao_submit[0], y = 350)
+        self.botao_submit.place(x = posicao_botao_submit[0], y = posicao_botao_submit[1])
+
+    def tornar_banco_principal(self, banco):
+
+        self.mostrar_mensagem(f'Seu banco principal foi definido como: {banco}', VERDE, 3000)
+        definir_banco_principal(banco)
 
 
+    def inserir_novo_banco(self):
+        adicionar_banco(self.novo_banco.get().capitalize())
+        self.botao = ctk.CTkButton(
+            self,
+            text=self.novo_banco.get().capitalize(),
+            )
 
+        self.lista_bancos.append(self.botao)
+
+        if self.posix <= 575:
+            self.posix += 250
+
+        if self.posix > 575:
+            self.posix = 75
+            self.posiy += 80
+
+        self.botao.place(x = self.posix, y = self.posiy)
+        self.limpar_campos()
+
+    def apagar_mensagem(self):
+        self.texto.configure(text='')
+
+    def mostrar_mensagem(self, mensagem, cor, tempo_em_tela:int):
+
+        self.texto.configure(text=mensagem,
+                             text_color=cor)
+
+        self.texto.place(x = erro_x, y = erro_y)
+        self.after(tempo_em_tela, self.apagar_mensagem)
+
+    def limpar_campos(self):
+        self.novo_banco.delete(0, 'end')
 
 teste = App()
 
